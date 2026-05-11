@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Accueil — CleanCity{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <h1 class="mb-3">
+                    Signalez les dépôts<br>
+                    <span style="color:#f7c948">sauvages d'ordures</span>
+                </h1>
+                <p class="lead mb-4" style="opacity:0.9;">
+                    Ensemble, rendons nos quartiers plus propres.
+                    Signalez, confirmez, suivez les interventions HYSACAM.
+                </p>
+                <a href="{% url 'signaler' %}" class="btn btn-warning btn-lg px-5">
+                    <i class="fas fa-plus-circle me-2"></i>Faire un signalement
+                </a>
+            </div>
+            <div class="col-lg-5 text-center d-none d-lg-block">
+                <i class="fas fa-city" style="font-size:8rem; opacity:0.2;"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- STATS -->
+<section style="background:white; padding: 30px 0; border-bottom: 1px solid #e0e7ef;">
+    <div class="container">
+        <div class="row text-center g-3">
+            <div class="col-md-3 col-6">
+                <div class="fw-700" style="font-size:2rem; color:var(--primary);">
+                    {{ signalements.count }}
+                </div>
+                <div class="text-muted" style="font-size:0.85rem;">Signalements</div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="fw-700" style="font-size:2rem; color:#dc2626;">
+                    {{ signalements|length }}
+                </div>
+                <div class="text-muted" style="font-size:0.85rem;">En attente</div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="fw-700" style="font-size:2rem; color:#2563eb;">
+                    0
+                </div>
+                <div class="text-muted" style="font-size:0.85rem;">En traitement</div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="fw-700" style="font-size:2rem; color:#16a34a;">
+                    0
+                </div>
+                <div class="text-muted" style="font-size:0.85rem;">Nettoyés</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FILTRES + LISTE -->
+<section class="section-padding">
+    <div class="container">
+        <div class="row g-4">
+
+            <!-- SIDEBAR FILTRE -->
+            <div class="col-lg-3">
+                <div class="card p-4">
+                    <h6 class="fw-700 mb-3">
+                        <i class="fas fa-filter me-2 text-success"></i>Filtrer
+                    </h6>
+                    <form method="GET">
+                        <label class="form-label">Quartier</label>
+                        <select name="quartier" class="form-select mb-3">
+                            <option value="">Tous les quartiers</option>
+                            {% for q in quartiers %}
+                            <option value="{{ q.id }}"
+                                {% if quartier_filtre == q.id|stringformat:"s" %}selected{% endif %}>
+                                {{ q.nom }} — {{ q.ville }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-search me-1"></i>Filtrer
+                        </button>
+                        {% if quartier_filtre %}
+                        <a href="{% url 'citoyen_accueil' %}" class="btn btn-outline-secondary w-100 mt-2">
+                            <i class="fas fa-times me-1"></i>Réinitialiser
+                        </a>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+
+            <!-- LISTE SIGNALEMENTS -->
+            <div class="col-lg-9">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-700 mb-0">
+                        <i class="fas fa-map-marker-alt me-2 text-success"></i>
+                        Signalements récents
+                    </h5>
+                    <a href="{% url 'signaler' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i>Nouveau
+                    </a>
+                </div>
+
+                {% if signalements %}
+                    {% for s in signalements %}
+                    <div class="card signalement-card mb-3 p-0">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <span class="statut-badge badge-{{ s.statut }}">
+                                            {% if s.statut == 'nouveau' %}🔴 Nouveau
+                                            {% elif s.statut == 'confirme' %}🟡 Confirmé
+                                            {% elif s.statut == 'en_traitement' %}🔵 En traitement
+                                            {% elif s.statut == 'nettoye' %}🟢 Nettoyé
+                                            {% endif %}
+                                        </span>
+                                        <small class="text-muted">
+                                            <i class="fas fa-map-marker-alt me-1"></i>
+                                            {{ s.quartier.nom }} — {{ s.quartier.ville }}
+                                        </small>
+                                    </div>
+                                    <p class="mb-2" style="font-size:0.92rem;">
+                                        {{ s.description|truncatewords:20 }}
+                                    </p>
+                                    <small class="text-muted">
+                                        <i class="fas fa-user me-1"></i>{{ s.auteur.username }}
+                                        &nbsp;·&nbsp;
+                                        <i class="fas fa-clock me-1"></i>
+                                        {{ s.date_creation|date:"d/m/Y H:i" }}
+                                    </small>
+                                </div>
+                                {% if s.photo %}
+                                <img src="{{ s.photo.url }}" alt="photo"
+                                     style="width:80px; height:80px; object-fit:cover;
+                                            border-radius:10px; margin-left:16px;">
+                                {% endif %}
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-between mt-3 pt-3"
+                                 style="border-top: 1px solid #e0e7ef;">
+                                <span class="confirmation-count">
+                                    <i class="fas fa-thumbs-up me-1"></i>
+                                    {{ s.nombre_confirmations }} confirmation{{ s.nombre_confirmations|pluralize }}
+                                </span>
+                                {% if s.auteur != user and s.statut != 'nettoye' %}
+                                <a href="{% url 'confirmer' s.pk %}"
+                                   class="btn btn-sm btn-outline-success">
+                                    <i class="fas fa-check me-1"></i>Moi aussi j'ai vu ça
+                                </a>
+                                {% elif s.auteur == user %}
+                                <span class="text-muted" style="font-size:0.82rem;">
+                                    <i class="fas fa-info-circle me-1"></i>Votre signalement
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="card p-5 text-center">
+                    <i class="fas fa-check-circle text-success mb-3" style="font-size:3rem;"></i>
+                    <h5 class="fw-600">Aucun signalement pour le moment</h5>
+                    <p class="text-muted mb-4">Soyez le premier à signaler un dépôt dans votre quartier.</p>
+                    <a href="{% url 'signaler' %}" class="btn btn-primary mx-auto"
+                       style="width:fit-content;">
+                        <i class="fas fa-plus me-1"></i>Faire un signalement
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

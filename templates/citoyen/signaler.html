@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Signaler un dépôt — CleanCity{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+
+                <!-- HEADER -->
+                <div class="text-center mb-5">
+                    <div style="width:70px; height:70px; background:var(--primary-light);
+                                border-radius:50%; display:flex; align-items:center;
+                                justify-content:center; margin:0 auto 16px;">
+                        <i class="fas fa-exclamation-triangle text-success" style="font-size:1.8rem;"></i>
+                    </div>
+                    <h2 class="fw-700">Signaler un dépôt</h2>
+                    <p class="text-muted">Remplissez ce formulaire pour signaler un dépôt sauvage d'ordures</p>
+                </div>
+
+                <!-- FORMULAIRE -->
+                <div class="card p-4 p-md-5">
+                    {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-danger py-2 mb-4">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <div class="mb-4">
+                            <label class="form-label">
+                                <i class="fas fa-map-marker-alt me-1 text-success"></i>
+                                Quartier concerné
+                            </label>
+                            {{ form.quartier }}
+                            {% if form.quartier.errors %}
+                            <div class="text-danger mt-1" style="font-size:0.82rem;">
+                                {{ form.quartier.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">
+                                <i class="fas fa-align-left me-1 text-success"></i>
+                                Description
+                            </label>
+                            {{ form.description }}
+                            <small class="text-muted">
+                                Décrivez l'emplacement précis et l'état du dépôt
+                            </small>
+                            {% if form.description.errors %}
+                            <div class="text-danger mt-1" style="font-size:0.82rem;">
+                                {{ form.description.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">
+                                <i class="fas fa-camera me-1 text-success"></i>
+                                Photo <span class="text-muted fw-400">(optionnel)</span>
+                            </label>
+                            {{ form.photo }}
+                            <small class="text-muted d-block mt-1">
+                                Une photo aide HYSACAM à mieux localiser le dépôt
+                            </small>
+                            <!-- Aperçu photo -->
+                            <div id="photoPreview" class="mt-3 d-none">
+                                <img id="previewImg" src=""
+                                     style="max-width:100%; border-radius:10px; max-height:200px; object-fit:cover;">
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-3 mt-4">
+                            <a href="{% url 'citoyen_accueil' %}"
+                               class="btn btn-outline-secondary flex-fill">
+                                <i class="fas fa-arrow-left me-1"></i>Annuler
+                            </a>
+                            <button type="submit" class="btn btn-primary flex-fill">
+                                <i class="fas fa-paper-plane me-2"></i>Envoyer le signalement
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.querySelector('input[type="file"]').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('previewImg').src = e.target.result;
+            document.getElementById('photoPreview').classList.remove('d-none');
+        }
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+
+{% endblock %}

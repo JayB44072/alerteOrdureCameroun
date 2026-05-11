@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mes signalements — CleanCity{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+
+        <!-- HEADER -->
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h2 class="fw-700 mb-1">Mes signalements</h2>
+                <p class="text-muted mb-0">Suivez l'état de vos signalements</p>
+            </div>
+            <a href="{% url 'signaler' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Nouveau
+            </a>
+        </div>
+
+        {% if signalements %}
+
+        <!-- STATS PERSO -->
+        <div class="row g-3 mb-5">
+            <div class="col-md-3 col-6">
+                <div class="card p-3 text-center">
+                    <div class="fw-700" style="font-size:1.8rem; color:var(--primary);">
+                        {{ signalements.count }}
+                    </div>
+                    <div class="text-muted" style="font-size:0.82rem;">Total</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card p-3 text-center">
+                    <div class="fw-700" style="font-size:1.8rem; color:#dc2626;">
+                        {{ signalements|length }}
+                    </div>
+                    <div class="text-muted" style="font-size:0.82rem;">Nouveaux</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card p-3 text-center">
+                    <div class="fw-700" style="font-size:1.8rem; color:#2563eb;">
+                        0
+                    </div>
+                    <div class="text-muted" style="font-size:0.82rem;">En traitement</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card p-3 text-center">
+                    <div class="fw-700" style="font-size:1.8rem; color:#16a34a;">
+                        0
+                    </div>
+                    <div class="text-muted" style="font-size:0.82rem;">Nettoyés</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LISTE -->
+        {% for s in signalements %}
+        <div class="card signalement-card mb-3">
+            <div class="card-body p-4">
+                <div class="row align-items-center">
+
+                    <!-- PHOTO -->
+                    <div class="col-auto d-none d-md-block">
+                        {% if s.photo %}
+                        <img src="{{ s.photo.url }}" alt="photo"
+                             style="width:90px; height:90px; object-fit:cover; border-radius:12px;">
+                        {% else %}
+                        <div style="width:90px; height:90px; background:var(--primary-light);
+                                    border-radius:12px; display:flex; align-items:center;
+                                    justify-content:center;">
+                            <i class="fas fa-trash-alt text-success" style="font-size:2rem;"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- INFOS -->
+                    <div class="col">
+                        <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                            <span class="statut-badge badge-{{ s.statut }}">
+                                {% if s.statut == 'nouveau' %}🔴 Nouveau
+                                {% elif s.statut == 'confirme' %}🟡 Confirmé
+                                {% elif s.statut == 'en_traitement' %}🔵 En traitement
+                                {% elif s.statut == 'nettoye' %}🟢 Nettoyé
+                                {% endif %}
+                            </span>
+                            <small class="text-muted">
+                                <i class="fas fa-map-marker-alt me-1"></i>
+                                {{ s.quartier.nom }} — {{ s.quartier.ville }}
+                            </small>
+                        </div>
+                        <p class="mb-2" style="font-size:0.92rem;">
+                            {{ s.description|truncatewords:25 }}
+                        </p>
+                        <div class="d-flex align-items-center gap-3 flex-wrap">
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>
+                                {{ s.date_creation|date:"d/m/Y à H:i" }}
+                            </small>
+                            <span class="confirmation-count">
+                                <i class="fas fa-thumbs-up me-1"></i>
+                                {{ s.nombre_confirmations }} confirmation{{ s.nombre_confirmations|pluralize }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- TIMELINE STATUT -->
+                    <div class="col-md-3 d-none d-md-block">
+                        <div class="d-flex flex-column gap-1">
+                            <div class="d-flex align-items-center gap-2">
+                                <div style="width:10px; height:10px; border-radius:50%;
+                                    background:{% if s.statut == 'nouveau' or s.statut == 'confirme' or s.statut == 'en_traitement' or s.statut == 'nettoye' %}#16a34a{% else %}#e0e7ef{% endif %};">
+                                </div>
+                                <small style="font-size:0.78rem;">Signalé</small>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <div style="width:10px; height:10px; border-radius:50%;
+                                    background:{% if s.statut == 'confirme' or s.statut == 'en_traitement' or s.statut == 'nettoye' %}#ca8a04{% else %}#e0e7ef{% endif %};">
+                                </div>
+                                <small style="font-size:0.78rem;">Confirmé</small>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <div style="width:10px; height:10px; border-radius:50%;
+                                    background:{% if s.statut == 'en_traitement' or s.statut == 'nettoye' %}#2563eb{% else %}#e0e7ef{% endif %};">
+                                </div>
+                                <small style="font-size:0.78rem;">En traitement</small>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <div style="width:10px; height:10px; border-radius:50%;
+                                    background:{% if s.statut == 'nettoye' %}#16a34a{% else %}#e0e7ef{% endif %};">
+                                </div>
+                                <small style="font-size:0.78rem;">Nettoyé</small>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        {% else %}
+        <div class="card p-5 text-center">
+            <i class="fas fa-clipboard-list text-success mb-3" style="font-size:3rem; opacity:0.5;"></i>
+            <h5 class="fw-600">Vous n'avez pas encore de signalement</h5>
+            <p class="text-muted mb-4">Signalez un dépôt sauvage dans votre quartier.</p>
+            <a href="{% url 'signaler' %}" class="btn btn-primary mx-auto"
+               style="width:fit-content;">
+                <i class="fas fa-plus me-1"></i>Faire un signalement
+            </a>
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}

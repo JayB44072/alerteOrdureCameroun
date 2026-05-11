@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard HYSACAM — CleanCity{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+
+        <!-- HEADER -->
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h2 class="fw-700 mb-1">
+                    <i class="fas fa-tachometer-alt me-2 text-success"></i>
+                    Dashboard HYSACAM
+                </h2>
+                <p class="text-muted mb-0">Gérez et traitez les signalements citoyens</p>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <div class="avatar-sm" style="width:40px; height:40px; font-size:1rem;">
+                    {{ user.username|first|upper }}
+                </div>
+                <span class="fw-600">{{ user.username }}</span>
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="row g-3 mb-5">
+            <div class="col-md-3 col-6">
+                <div class="card p-4 text-center">
+                    <div class="fw-700" style="font-size:2rem; color:var(--primary);">
+                        {{ signalements.count }}
+                    </div>
+                    <div class="text-muted" style="font-size:0.85rem;">Total</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card p-4 text-center">
+                    <div class="fw-700" style="font-size:2rem; color:#dc2626;">
+                        {{ signalements|length }}
+                    </div>
+                    <div class="text-muted" style="font-size:0.85rem;">Nouveaux</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card p-4 text-center">
+                    <div class="fw-700" style="font-size:2rem; color:#2563eb;">
+                        0
+                    </div>
+                    <div class="text-muted" style="font-size:0.85rem;">En traitement</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card p-4 text-center">
+                    <div class="fw-700" style="font-size:2rem; color:#16a34a;">
+                        0
+                    </div>
+                    <div class="text-muted" style="font-size:0.85rem;">Nettoyés</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FILTRES -->
+        <div class="card p-3 mb-4">
+            <form method="GET" class="d-flex align-items-center gap-3 flex-wrap">
+                <label class="form-label mb-0 fw-600">
+                    <i class="fas fa-filter me-1 text-success"></i>Filtrer par statut :
+                </label>
+                <select name="statut" class="form-select" style="width:auto;">
+                    <option value="">Tous</option>
+                    <option value="nouveau" {% if statut_filtre == 'nouveau' %}selected{% endif %}>
+                        🔴 Nouveau
+                    </option>
+                    <option value="confirme" {% if statut_filtre == 'confirme' %}selected{% endif %}>
+                        🟡 Confirmé
+                    </option>
+                    <option value="en_traitement" {% if statut_filtre == 'en_traitement' %}selected{% endif %}>
+                        🔵 En traitement
+                    </option>
+                    <option value="nettoye" {% if statut_filtre == 'nettoye' %}selected{% endif %}>
+                        🟢 Nettoyé
+                    </option>
+                </select>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search me-1"></i>Filtrer
+                </button>
+                {% if statut_filtre %}
+                <a href="{% url 'hysacam_dashboard' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-times me-1"></i>Réinitialiser
+                </a>
+                {% endif %}
+            </form>
+        </div>
+
+        <!-- LISTE SIGNALEMENTS -->
+        {% if signalements %}
+            {% for s in signalements %}
+            <div class="card signalement-card mb-3">
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+
+                        <!-- PHOTO -->
+                        <div class="col-auto d-none d-md-block">
+                            {% if s.photo %}
+                            <img src="{{ s.photo.url }}" alt="photo"
+                                 style="width:90px; height:90px; object-fit:cover; border-radius:12px;">
+                            {% else %}
+                            <div style="width:90px; height:90px; background:var(--primary-light);
+                                        border-radius:12px; display:flex; align-items:center;
+                                        justify-content:center;">
+                                <i class="fas fa-trash-alt text-success" style="font-size:2rem;"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- INFOS -->
+                        <div class="col">
+                            <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                                <span class="statut-badge badge-{{ s.statut }}">
+                                    {% if s.statut == 'nouveau' %}🔴 Nouveau
+                                    {% elif s.statut == 'confirme' %}🟡 Confirmé
+                                    {% elif s.statut == 'en_traitement' %}🔵 En traitement
+                                    {% elif s.statut == 'nettoye' %}🟢 Nettoyé
+                                    {% endif %}
+                                </span>
+                                <small class="text-muted">
+                                    <i class="fas fa-map-marker-alt me-1"></i>
+                                    {{ s.quartier.nom }} — {{ s.quartier.ville }}
+                                </small>
+                                <span class="confirmation-count">
+                                    <i class="fas fa-thumbs-up me-1"></i>
+                                    {{ s.nombre_confirmations }} confirmation{{ s.nombre_confirmations|pluralize }}
+                                </span>
+                            </div>
+                            <p class="mb-2" style="font-size:0.92rem;">
+                                {{ s.description|truncatewords:20 }}
+                            </p>
+                            <small class="text-muted">
+                                <i class="fas fa-user me-1"></i>{{ s.auteur.username }}
+                                &nbsp;·&nbsp;
+                                <i class="fas fa-clock me-1"></i>
+                                {{ s.date_creation|date:"d/m/Y à H:i" }}
+                            </small>
+                        </div>
+
+                        <!-- ACTIONS HYSACAM -->
+                        <div class="col-md-3">
+                            {% if s.statut != 'nettoye' %}
+                            <form method="POST" action="{% url 'changer_statut' s.pk %}">
+                                {% csrf_token %}
+                                <div class="d-flex flex-column gap-2">
+                                    {% if s.statut == 'nouveau' or s.statut == 'confirme' %}
+                                    <button type="submit" name="statut" value="en_traitement"
+                                            class="btn btn-sm"
+                                            style="background:#dbeafe; color:#2563eb; font-weight:600;">
+                                        <i class="fas fa-truck me-1"></i>Prendre en charge
+                                    </button>
+                                    {% endif %}
+                                    {% if s.statut == 'en_traitement' %}
+                                    <button type="submit" name="statut" value="nettoye"
+                                            class="btn btn-sm"
+                                            style="background:#dcfce7; color:#16a34a; font-weight:600;">
+                                        <i class="fas fa-check-circle me-1"></i>Marquer nettoyé
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </form>
+                            {% else %}
+                            <div class="text-center">
+                                <i class="fas fa-check-circle text-success" style="font-size:2rem;"></i>
+                                <div style="font-size:0.82rem; color:#16a34a; font-weight:600;">
+                                    Nettoyé
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+        {% else %}
+        <div class="card p-5 text-center">
+            <i class="fas fa-check-circle text-success mb-3" style="font-size:3rem;"></i>
+            <h5 class="fw-600">Aucun signalement</h5>
+            <p class="text-muted">Aucun signalement ne correspond à ce filtre.</p>
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}
