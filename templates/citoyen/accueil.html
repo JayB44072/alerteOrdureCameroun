@@ -5,175 +5,224 @@
 
 {% block content %}
 
-<!-- HERO -->
-<section class="hero-section">
+<!-- HERO COMPACT -->
+<section style="background: linear-gradient(135deg, #134d2c 0%, #1a6b3c 60%, #2ecc71 100%); padding: 48px 0 36px;">
     <div class="container">
         <div class="row align-items-center">
-            <div class="col-lg-7">
-                <h1 class="mb-3">
+            <div class="col-lg-8">
+                <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:6px 14px;margin-bottom:16px;">
+                    <span style="width:8px;height:8px;background:#f7c948;border-radius:50%;display:inline-block;"></span>
+                    <span style="color:rgba(255,255,255,0.9);font-size:0.78rem;font-weight:500;">Plateforme citoyenne • Cameroun</span>
+                </div>
+                <h1 style="color:white;font-size:2.2rem;font-weight:700;line-height:1.2;margin-bottom:12px;">
                     Signalez les dépôts<br>
-                    <span style="color:#f7c948">sauvages d'ordures</span>
+                    <span style="color:#f7c948;">sauvages d'ordures</span>
                 </h1>
-                <p class="lead mb-4" style="opacity:0.9;">
-                    Ensemble, rendons nos quartiers plus propres.
-                    Signalez, confirmez, suivez les interventions HYSACAM.
+                <p style="color:rgba(255,255,255,0.75);font-size:0.92rem;margin-bottom:24px;max-width:500px;line-height:1.7;">
+                    Ensemble, rendons nos quartiers plus propres. Signalez, confirmez et suivez les interventions HYSACAM en temps réel.
                 </p>
-                <a href="{% url 'signaler' %}" class="btn btn-warning btn-lg px-5">
-                    <i class="fas fa-plus-circle me-2"></i>Faire un signalement
+                <a href="{% url 'signaler' %}" style="display:inline-flex;align-items:center;gap:8px;background:#f7c948;color:#134d2c;font-weight:700;font-size:0.92rem;padding:13px 28px;border-radius:12px;text-decoration:none;">
+                    <i class="fas fa-plus-circle"></i> Faire un signalement
                 </a>
             </div>
-            <div class="col-lg-5 text-center d-none d-lg-block">
-                <i class="fas fa-city" style="font-size:8rem; opacity:0.2;"></i>
+            <div class="col-lg-4 text-center d-none d-lg-block">
+                <i class="fas fa-recycle" style="font-size:7rem;color:rgba(255,255,255,0.1);"></i>
             </div>
         </div>
     </div>
 </section>
 
-<!-- STATS -->
-<section style="background:white; padding: 30px 0; border-bottom: 1px solid #e0e7ef;">
+<!-- STATS BAND — données réelles -->
+<section style="background:white;border-bottom:1px solid #e8f5ee;padding:20px 0;">
     <div class="container">
-        <div class="row text-center g-3">
-            <div class="col-md-3 col-6">
-                <div class="fw-700" style="font-size:2rem; color:var(--primary);">
-                    {{ signalements.count }}
-                </div>
-                <div class="text-muted" style="font-size:0.85rem;">Signalements</div>
+        <div class="row text-center g-0">
+            <div class="col-3">
+                <div style="font-size:1.8rem;font-weight:700;color:#1a6b3c;">{{ total }}</div>
+                <div style="font-size:0.75rem;color:#6c757d;font-weight:500;">Signalements</div>
             </div>
-            <div class="col-md-3 col-6">
-                <div class="fw-700" style="font-size:2rem; color:#dc2626;">
-                    {{ signalements|length }}
-                </div>
-                <div class="text-muted" style="font-size:0.85rem;">En attente</div>
+            <div class="col-3" style="border-left:1px solid #e8f5ee;">
+                <div style="font-size:1.8rem;font-weight:700;color:#dc2626;">{{ nouveaux }}</div>
+                <div style="font-size:0.75rem;color:#6c757d;font-weight:500;">En attente</div>
             </div>
-            <div class="col-md-3 col-6">
-                <div class="fw-700" style="font-size:2rem; color:#2563eb;">
-                    0
-                </div>
-                <div class="text-muted" style="font-size:0.85rem;">En traitement</div>
+            <div class="col-3" style="border-left:1px solid #e8f5ee;">
+                <div style="font-size:1.8rem;font-weight:700;color:#2563eb;">{{ en_traitement }}</div>
+                <div style="font-size:0.75rem;color:#6c757d;font-weight:500;">En traitement</div>
             </div>
-            <div class="col-md-3 col-6">
-                <div class="fw-700" style="font-size:2rem; color:#16a34a;">
-                    0
-                </div>
-                <div class="text-muted" style="font-size:0.85rem;">Nettoyés</div>
+            <div class="col-3" style="border-left:1px solid #e8f5ee;">
+                <div style="font-size:1.8rem;font-weight:700;color:#16a34a;">{{ nettoyes }}</div>
+                <div style="font-size:0.75rem;color:#6c757d;font-weight:500;">Nettoyés</div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- FILTRES + LISTE -->
-<section class="section-padding">
+<!-- CONTENU PRINCIPAL -->
+<section style="background:#f8fafb;padding:36px 0;min-height:calc(100vh - 340px);">
     <div class="container">
         <div class="row g-4">
 
-            <!-- SIDEBAR FILTRE -->
+            <!-- SIDEBAR -->
             <div class="col-lg-3">
-                <div class="card p-4">
-                    <h6 class="fw-700 mb-3">
-                        <i class="fas fa-filter me-2 text-success"></i>Filtrer
+                <div style="background:white;border-radius:16px;padding:24px;box-shadow:0 2px 12px rgba(26,107,60,0.08);border:1px solid #e8f5ee;position:sticky;top:20px;">
+                    
+                    <!-- Filtre quartier -->
+                    <h6 style="font-weight:700;font-size:0.85rem;color:#1a1a2e;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+                        <i class="fas fa-filter" style="color:#1a6b3c;"></i> Filtrer
                     </h6>
                     <form method="GET">
-                        <label class="form-label">Quartier</label>
-                        <select name="quartier" class="form-select mb-3">
+                        <label style="font-size:0.75rem;font-weight:600;color:#1a1a2e;margin-bottom:6px;display:block;">Quartier</label>
+                        <select name="quartier" style="width:100%;padding:10px 12px;border:2px solid #e8f5ee;border-radius:10px;font-family:'Poppins',sans-serif;font-size:0.8rem;background:#f8fafb;color:#1a1a2e;outline:none;margin-bottom:12px;">
                             <option value="">Tous les quartiers</option>
                             {% for q in quartiers %}
-                            <option value="{{ q.id }}"
-                                {% if quartier_filtre == q.id|stringformat:"s" %}selected{% endif %}>
+                            <option value="{{ q.id }}" {% if quartier_filtre == q.id|stringformat:"s" %}selected{% endif %}>
                                 {{ q.nom }} — {{ q.ville }}
                             </option>
                             {% endfor %}
                         </select>
-                        <button type="submit" class="btn btn-primary w-100">
-                            <i class="fas fa-search me-1"></i>Filtrer
+                        <button type="submit" style="width:100%;padding:10px;background:linear-gradient(135deg,#1a6b3c,#134d2c);color:white;border:none;border-radius:10px;font-family:'Poppins',sans-serif;font-size:0.82rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+                            <i class="fas fa-search"></i> Filtrer
                         </button>
                         {% if quartier_filtre %}
-                        <a href="{% url 'citoyen_accueil' %}" class="btn btn-outline-secondary w-100 mt-2">
+                        <a href="{% url 'citoyen_accueil' %}" style="display:block;text-align:center;margin-top:8px;font-size:0.75rem;color:#6c757d;text-decoration:none;">
                             <i class="fas fa-times me-1"></i>Réinitialiser
                         </a>
                         {% endif %}
                     </form>
+
+                    <!-- Mini stats sidebar -->
+                    <div style="margin-top:24px;padding-top:20px;border-top:1px solid #e8f5ee;">
+                        <h6 style="font-weight:700;font-size:0.8rem;color:#1a1a2e;margin-bottom:12px;">Vue rapide</h6>
+                        <div style="display:flex;flex-direction:column;gap:8px;">
+                            <div style="display:flex;align-items:center;justify-content:space-between;background:#f8fafb;border-radius:8px;padding:8px 12px;">
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <span style="width:8px;height:8px;background:#dc2626;border-radius:50%;"></span>
+                                    <span style="font-size:0.75rem;color:#6c757d;">Nouveau</span>
+                                </div>
+                                <span style="font-size:0.78rem;font-weight:700;color:#dc2626;">{{ nouveaux }}</span>
+                            </div>
+                            <div style="display:flex;align-items:center;justify-content:space-between;background:#f8fafb;border-radius:8px;padding:8px 12px;">
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <span style="width:8px;height:8px;background:#2563eb;border-radius:50%;"></span>
+                                    <span style="font-size:0.75rem;color:#6c757d;">En traitement</span>
+                                </div>
+                                <span style="font-size:0.78rem;font-weight:700;color:#2563eb;">{{ en_traitement }}</span>
+                            </div>
+                            <div style="display:flex;align-items:center;justify-content:space-between;background:#f8fafb;border-radius:8px;padding:8px 12px;">
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <span style="width:8px;height:8px;background:#16a34a;border-radius:50%;"></span>
+                                    <span style="font-size:0.75rem;color:#6c757d;">Nettoyé</span>
+                                </div>
+                                <span style="font-size:0.78rem;font-weight:700;color:#16a34a;">{{ nettoyes }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lien mes signalements -->
+                    <div style="margin-top:20px;padding-top:20px;border-top:1px solid #e8f5ee;">
+                        <a href="{% url 'mes_signalements' %}" style="display:flex;align-items:center;gap:10px;background:#e8f5ee;border-radius:10px;padding:12px 14px;text-decoration:none;transition:all 0.2s;">
+                            <i class="fas fa-list" style="color:#1a6b3c;font-size:0.9rem;"></i>
+                            <div>
+                                <div style="font-size:0.78rem;font-weight:700;color:#1a6b3c;">Mes signalements</div>
+                                <div style="font-size:0.7rem;color:#6c757d;">Voir mon historique</div>
+                            </div>
+                            <i class="fas fa-chevron-right" style="color:#1a6b3c;font-size:0.7rem;margin-left:auto;"></i>
+                        </a>
+                    </div>
+
                 </div>
             </div>
 
             <!-- LISTE SIGNALEMENTS -->
             <div class="col-lg-9">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 class="fw-700 mb-0">
-                        <i class="fas fa-map-marker-alt me-2 text-success"></i>
-                        Signalements récents
-                    </h5>
-                    <a href="{% url 'signaler' %}" class="btn btn-primary">
-                        <i class="fas fa-plus me-1"></i>Nouveau
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                    <div>
+                        <h5 style="font-weight:700;margin:0 0 2px;font-size:1rem;color:#1a1a2e;">
+                            <i class="fas fa-map-marker-alt me-2" style="color:#1a6b3c;"></i>
+                            Signalements récents
+                        </h5>
+                        <p style="font-size:0.75rem;color:#adb5bd;margin:0;">
+                            {{ total }} signalement{{ total|pluralize }} au total
+                        </p>
+                    </div>
+                    <a href="{% url 'signaler' %}" style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#1a6b3c,#134d2c);color:white;font-weight:600;font-size:0.82rem;padding:9px 18px;border-radius:10px;text-decoration:none;">
+                        <i class="fas fa-plus"></i> Nouveau
                     </a>
                 </div>
 
                 {% if signalements %}
                     {% for s in signalements %}
-                    <div class="card signalement-card mb-3 p-0">
-                        <div class="card-body p-4">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div class="flex-grow-1">
-                                    <div class="d-flex align-items-center gap-2 mb-2">
-                                        <span class="statut-badge badge-{{ s.statut }}">
-                                            {% if s.statut == 'nouveau' %}🔴 Nouveau
-                                            {% elif s.statut == 'confirme' %}🟡 Confirmé
-                                            {% elif s.statut == 'en_traitement' %}🔵 En traitement
-                                            {% elif s.statut == 'nettoye' %}🟢 Nettoyé
-                                            {% endif %}
-                                        </span>
-                                        <small class="text-muted">
-                                            <i class="fas fa-map-marker-alt me-1"></i>
-                                            {{ s.quartier.nom }} — {{ s.quartier.ville }}
-                                        </small>
-                                    </div>
-                                    <p class="mb-2" style="font-size:0.92rem;">
-                                        {{ s.description|truncatewords:20 }}
-                                    </p>
-                                    <small class="text-muted">
-                                        <i class="fas fa-user me-1"></i>{{ s.auteur.username }}
-                                        &nbsp;·&nbsp;
-                                        <i class="fas fa-clock me-1"></i>
-                                        {{ s.date_creation|date:"d/m/Y H:i" }}
-                                    </small>
+                    <div style="background:white;border-radius:16px;padding:20px 24px;margin-bottom:14px;box-shadow:0 2px 12px rgba(26,107,60,0.06);border:1px solid #e8f5ee;border-left:4px solid {% if s.statut == 'nouveau' %}#dc2626{% elif s.statut == 'confirme' %}#ca8a04{% elif s.statut == 'en_traitement' %}#2563eb{% else %}#16a34a{% endif %};transition:all 0.2s;">
+
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;">
+                            <div style="flex:1;">
+                                <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
+                                    <span style="padding:4px 12px;border-radius:20px;font-size:0.75rem;font-weight:600;
+                                        {% if s.statut == 'nouveau' %}background:#fee2e2;color:#dc2626;
+                                        {% elif s.statut == 'confirme' %}background:#fef9c3;color:#ca8a04;
+                                        {% elif s.statut == 'en_traitement' %}background:#dbeafe;color:#2563eb;
+                                        {% else %}background:#dcfce7;color:#16a34a;{% endif %}">
+                                        {% if s.statut == 'nouveau' %}🔴 Nouveau
+                                        {% elif s.statut == 'confirme' %}🟡 Confirmé
+                                        {% elif s.statut == 'en_traitement' %}🔵 En traitement
+                                        {% else %}🟢 Nettoyé{% endif %}
+                                    </span>
+                                    <span style="font-size:0.78rem;color:#6c757d;display:flex;align-items:center;gap:4px;">
+                                        <i class="fas fa-map-marker-alt" style="color:#1a6b3c;font-size:0.7rem;"></i>
+                                        {{ s.quartier.nom }} — {{ s.quartier.ville }}
+                                    </span>
                                 </div>
-                                {% if s.photo %}
-                                <img src="{{ s.photo.url }}" alt="photo"
-                                     style="width:80px; height:80px; object-fit:cover;
-                                            border-radius:10px; margin-left:16px;">
-                                {% endif %}
+
+                                <p style="font-size:0.88rem;color:#1a1a2e;margin-bottom:10px;line-height:1.5;">
+                                    {{ s.description|truncatewords:20 }}
+                                </p>
+
+                                <div style="display:flex;align-items:center;gap:16px;font-size:0.75rem;color:#adb5bd;">
+                                    <span><i class="fas fa-user me-1"></i>{{ s.auteur.username }}</span>
+                                    <span><i class="fas fa-clock me-1"></i>{{ s.date_creation|date:"d/m/Y H:i" }}</span>
+                                </div>
                             </div>
 
-                            <div class="d-flex align-items-center justify-content-between mt-3 pt-3"
-                                 style="border-top: 1px solid #e0e7ef;">
-                                <span class="confirmation-count">
-                                    <i class="fas fa-thumbs-up me-1"></i>
-                                    {{ s.nombre_confirmations }} confirmation{{ s.nombre_confirmations|pluralize }}
-                                </span>
-                                {% if s.auteur != user and s.statut != 'nettoye' %}
-                                <a href="{% url 'confirmer' s.pk %}"
-                                   class="btn btn-sm btn-outline-success">
-                                    <i class="fas fa-check me-1"></i>Moi aussi j'ai vu ça
-                                </a>
-                                {% elif s.auteur == user %}
-                                <span class="text-muted" style="font-size:0.82rem;">
-                                    <i class="fas fa-info-circle me-1"></i>Votre signalement
-                                </span>
-                                {% endif %}
+                            {% if s.photo %}
+                            <img src="{{ s.photo.url }}" alt="photo"
+                                 style="width:80px;height:80px;object-fit:cover;border-radius:12px;flex-shrink:0;">
+                            {% else %}
+                            <div style="width:80px;height:80px;background:#e8f5ee;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                <i class="fas fa-trash-alt" style="color:#1a6b3c;font-size:1.5rem;opacity:0.5;"></i>
                             </div>
+                            {% endif %}
+                        </div>
+
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:12px;border-top:1px solid #f0f4f0;">
+                            <span style="background:#e8f5ee;color:#1a6b3c;padding:4px 12px;border-radius:20px;font-size:0.75rem;font-weight:700;">
+                                <i class="fas fa-thumbs-up me-1"></i>
+                                {{ s.nombre_confirmations }} confirmation{{ s.nombre_confirmations|pluralize }}
+                            </span>
+                            {% if s.auteur != user and s.statut != 'nettoye' %}
+                            <a href="{% url 'confirmer' s.pk %}" style="display:inline-flex;align-items:center;gap:6px;background:#f0fdf4;color:#1a6b3c;border:1.5px solid #c3e6d0;font-size:0.78rem;font-weight:600;padding:6px 14px;border-radius:8px;text-decoration:none;">
+                                <i class="fas fa-check"></i> Moi aussi j'ai vu ça
+                            </a>
+                            {% elif s.auteur == user %}
+                            <span style="font-size:0.75rem;color:#adb5bd;">
+                                <i class="fas fa-info-circle me-1"></i>Votre signalement
+                            </span>
+                            {% endif %}
                         </div>
                     </div>
                     {% endfor %}
+
                 {% else %}
-                <div class="card p-5 text-center">
-                    <i class="fas fa-check-circle text-success mb-3" style="font-size:3rem;"></i>
-                    <h5 class="fw-600">Aucun signalement pour le moment</h5>
-                    <p class="text-muted mb-4">Soyez le premier à signaler un dépôt dans votre quartier.</p>
-                    <a href="{% url 'signaler' %}" class="btn btn-primary mx-auto"
-                       style="width:fit-content;">
-                        <i class="fas fa-plus me-1"></i>Faire un signalement
+                <div style="background:white;border-radius:16px;padding:60px 24px;text-align:center;box-shadow:0 2px 12px rgba(26,107,60,0.06);border:1px solid #e8f5ee;">
+                    <div style="width:72px;height:72px;background:#e8f5ee;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+                        <i class="fas fa-check-circle" style="font-size:2rem;color:#1a6b3c;"></i>
+                    </div>
+                    <h5 style="font-weight:700;color:#1a1a2e;margin-bottom:8px;">Aucun signalement pour le moment</h5>
+                    <p style="color:#6c757d;font-size:0.85rem;margin-bottom:20px;">Soyez le premier à signaler un dépôt dans votre quartier.</p>
+                    <a href="{% url 'signaler' %}" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#1a6b3c,#134d2c);color:white;font-weight:600;font-size:0.88rem;padding:12px 24px;border-radius:12px;text-decoration:none;">
+                        <i class="fas fa-plus"></i> Faire un signalement
                     </a>
                 </div>
                 {% endif %}
+
             </div>
         </div>
     </div>

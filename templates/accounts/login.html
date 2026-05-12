@@ -8,61 +8,455 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #e8f5ee 0%, #f0fdf4 50%, #ffffff 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 16px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -120px;
+            left: -120px;
+            width: 400px;
+            height: 400px;
+            background: rgba(26,107,60,0.06);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -100px;
+            right: -100px;
+            width: 350px;
+            height: 350px;
+            background: rgba(247,201,72,0.08);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 880px;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 20px 60px rgba(26,107,60,0.12),
+                        0 4px 20px rgba(0,0,0,0.06);
+            overflow: hidden;
+            display: flex;
+            height: 560px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== GAUCHE ===== */
+        .left-panel {
+            width: 50%;
+            background: linear-gradient(160deg, #134d2c 0%, #1a6b3c 55%, #27ae60 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 36px 28px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            top: -60px; right: -60px;
+            width: 200px; height: 200px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 50%;
+        }
+
+        .left-panel::after {
+            content: '';
+            position: absolute;
+            bottom: -40px; left: -40px;
+            width: 160px; height: 160px;
+            background: rgba(247,201,72,0.1);
+            border-radius: 50%;
+        }
+
+        .left-brand {
+            position: absolute;
+            top: 22px; left: 26px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 2;
+        }
+
+        .left-brand span {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .left-brand span em {
+            color: #f7c948;
+            font-style: normal;
+        }
+
+        .illustration-wrapper {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            text-align: center;
+        }
+
+        .illustration-wrapper img {
+            width: 100%;
+            max-width: 280px;
+            filter: drop-shadow(0 12px 30px rgba(0,0,0,0.25));
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .left-text {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .left-text h2 {
+            color: white;
+            font-size: 1.15rem;
+            font-weight: 700;
+            line-height: 1.4;
+            margin-bottom: 6px;
+        }
+
+        .left-text h2 span { color: #f7c948; }
+
+        .left-text p {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.75rem;
+            line-height: 1.6;
+            max-width: 250px;
+            margin: 0 auto;
+        }
+
+        .left-badges {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 16px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 2;
+        }
+
+        .badge-item {
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 4px 11px;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .badge-item i { color: #f7c948; font-size: 0.68rem; }
+
+        /* ===== DROITE ===== */
+        .right-panel {
+            width: 50%;
+            padding: 40px 36px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: white;
+            overflow: hidden;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .user-avatar {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #e8f5ee, #c3e6d0);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px;
+            border: 3px solid #1a6b3c;
+        }
+
+        .user-avatar i {
+            font-size: 1.6rem;
+            color: #1a6b3c;
+        }
+
+        .form-header h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 4px;
+        }
+
+        .form-header p {
+            color: #6c757d;
+            font-size: 0.82rem;
+        }
+
+        .form-group { margin-bottom: 16px; }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #1a1a2e;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .input-wrapper { position: relative; }
+
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #1a6b3c;
+            font-size: 0.82rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 14px 12px 38px;
+            border: 2px solid #e8f5ee;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.85rem;
+            background: #f8fafb;
+            transition: all 0.2s;
+            outline: none;
+            color: #1a1a2e;
+        }
+
+        .form-control:focus {
+            border-color: #1a6b3c;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(26,107,60,0.08);
+        }
+
+        .eye-toggle {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #adb5bd;
+            transition: color 0.2s;
+            font-size: 0.82rem;
+        }
+
+        .eye-toggle:hover { color: #1a6b3c; }
+
+        .alert-error {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            border-radius: 10px;
+            padding: 9px 13px;
+            font-size: 0.8rem;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(135deg, #1a6b3c 0%, #134d2c 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(26,107,60,0.35);
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+
+        .register-link a {
+            color: #1a6b3c;
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .register-link a:hover {
+            color: #134d2c;
+            text-decoration: underline;
+        }
+
+        .hysacam-note {
+            margin-top: 14px;
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 10px;
+            padding: 10px 13px;
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+        }
+
+        .hysacam-note i {
+            color: #f7c948;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .hysacam-note p {
+            font-size: 0.72rem;
+            color: #92400e;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .hysacam-note strong { color: #1a6b3c; }
+
+        @media (max-width: 768px) {
+            .left-panel { display: none; }
+            .right-panel { width: 100%; padding: 36px 24px; }
+            .login-card { max-width: 420px; height: auto; }
+            body { overflow: auto; }
+        }
+    </style>
 </head>
 <body>
-<div class="auth-wrapper">
-    <div class="auth-card">
 
-        <div class="auth-logo">
-            <i class="fas fa-recycle text-success me-2"></i>
-            Clean<span style="color:#f7c948">City</span>
+<div class="login-card">
+
+    <!-- GAUCHE -->
+    <div class="left-panel">
+        <div class="left-brand">
+            <i class="fas fa-recycle" style="color:#f7c948; font-size:1.1rem;"></i>
+            <span>Clean<em>City</em></span>
         </div>
-        <p class="auth-subtitle">Connectez-vous à votre compte</p>
+
+        <div class="illustration-wrapper">
+            <img src="{% static 'images/illustration_login.png' %}"
+                 alt="CleanCity Illustration">
+        </div>
+
+        <div class="left-text">
+            <h2>Pour un Cameroun<br><span>plus propre</span></h2>
+            <p>Signalez les dépôts sauvages et suivez les interventions HYSACAM en temps réel.</p>
+        </div>
+
+        <div class="left-badges">
+            <div class="badge-item">
+                <i class="fas fa-users"></i> Communauté
+            </div>
+            <div class="badge-item">
+                <i class="fas fa-truck"></i> HYSACAM
+            </div>
+            <div class="badge-item">
+                <i class="fas fa-leaf"></i> Écologie
+            </div>
+        </div>
+    </div>
+
+    <!-- DROITE -->
+    <div class="right-panel">
+
+        <div class="form-header">
+            <div class="user-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <h1>Connexion</h1>
+            <p>Connectez-vous à votre espace CleanCity</p>
+        </div>
 
         {% if messages %}
             {% for message in messages %}
-            <div class="alert alert-danger py-2 text-center" style="font-size:0.88rem;">
+            <div class="alert-error">
+                <i class="fas fa-exclamation-circle"></i>
                 {{ message }}
             </div>
             {% endfor %}
         {% endif %}
 
-        <form method="POST">
-            {% csrf_token %}
-            <div class="mb-3">
-                <label class="form-label">
-                    <i class="fas fa-user me-1 text-success"></i>Nom d'utilisateur
-                </label>
-                <input type="text" name="username" class="form-control"
-                       placeholder="Votre nom d'utilisateur" required>
-            </div>
-            <div class="mb-4">
-                <label class="form-label">
-                    <i class="fas fa-lock me-1 text-success"></i>Mot de passe
-                </label>
-                <div class="position-relative">
-                    <input type="password" name="password" class="form-control"
-                           placeholder="Votre mot de passe" id="passwordInput" required>
-                    <span class="position-absolute top-50 end-0 translate-middle-y pe-3"
-                          style="cursor:pointer;" onclick="togglePassword()">
-                        <i class="fas fa-eye text-muted" id="eyeIcon"></i>
-                    </span>
-                </div>
-            </div>
-            <button type="submit" class="btn btn-primary w-100 py-3">
-                <i class="fas fa-sign-in-alt me-2"></i>Se connecter
-            </button>
-        </form>
+     <form method="POST" action="{% url 'login' %}">
+    {% csrf_token %}
 
-        <div class="divider"><span>Pas encore de compte ?</span></div>
+    <div class="form-group">
+        <label class="form-label">Nom d'utilisateur</label>
+        <div class="input-wrapper">
+            <i class="fas fa-user input-icon"></i>
+            {{ form.username }}
+        </div>
+    </div>
 
-        <a href="{% url 'register' %}" class="btn btn-outline-success w-100">
-            <i class="fas fa-user-plus me-2"></i>Créer un compte
-        </a>
+    <div class="form-group">
+        <label class="form-label">Mot de passe</label>
+        <div class="input-wrapper">
+            <i class="fas fa-lock input-icon"></i>
+            {{ form.password }}
+        </div>
+    </div>
+
+    <button type="submit" class="btn-login">
+        <i class="fas fa-sign-in-alt"></i>
+        Se connecter
+    </button>
+</form>
+
+        <div class="register-link">
+            Pas encore de compte ?
+            <a href="{% url 'register' %}">S'inscrire</a>
+        </div>
+
 
     </div>
 </div>
+
 <script>
 function togglePassword() {
     const input = document.getElementById('passwordInput');

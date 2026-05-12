@@ -6,20 +6,42 @@ from .forms import SignalementForm
 
 @login_required
 def citoyen_accueil(request):
-    signalements = Signalement.objects.all().order_by('-date_creation')
+    # Rediriger l'agent vers son dashboard
+    if request.user.role == 'agent':
+        return redirect('hysacam_dashboard')
+    
+    tous_signalements = Signalement.objects.all()
+    
+    # Stats réelles
+    total = tous_signalements.count()
+    nouveaux = tous_signalements.filter(statut__in=['nouveau', 'confirme']).count()
+    en_traitement = tous_signalements.filter(statut='en_traitement').count()
+    nettoyes = tous_signalements.filter(statut='nettoye').count()
+    
+    # Filtrage
+    signalements = tous_signalements.order_by('-date_creation')
     quartiers = Quartier.objects.all()
     quartier_filtre = request.GET.get('quartier')
     if quartier_filtre:
         signalements = signalements.filter(quartier__id=quartier_filtre)
+    
     return render(request, 'citoyen/accueil.html', {
         'signalements': signalements,
         'quartiers': quartiers,
         'quartier_filtre': quartier_filtre,
+        'total': total,
+        'nouveaux': nouveaux,
+        'en_traitement': en_traitement,
+        'nettoyes': nettoyes,
     })
 
 
 @login_required
 def signaler(request):
+    # Rediriger l'agent
+    if request.user.role == 'agent':
+        return redirect('hysacam_dashboard')
+    
     if request.method == 'POST':
         form = SignalementForm(request.POST, request.FILES)
         if form.is_valid():
@@ -37,6 +59,10 @@ def signaler(request):
 
 @login_required
 def mes_signalements(request):
+    # Rediriger l'agent
+    if request.user.role == 'agent':
+        return redirect('hysacam_dashboard')
+    
     signalements = Signalement.objects.filter(
         auteur=request.user
     ).order_by('-date_creation')
@@ -47,6 +73,10 @@ def mes_signalements(request):
 
 @login_required
 def confirmer(request, pk):
+    # Rediriger l'agent
+    if request.user.role == 'agent':
+        return redirect('hysacam_dashboard')
+    
     signalement = get_object_or_404(Signalement, pk=pk)
     if signalement.auteur == request.user:
         messages.warning(request, 'Vous ne pouvez pas confirmer votre propre signalement.')
@@ -70,13 +100,28 @@ def hysacam_dashboard(request):
     if request.user.role != 'agent':
         messages.error(request, 'Accès réservé aux agents HYSACAM.')
         return redirect('citoyen_accueil')
-    signalements = Signalement.objects.all().order_by('-date_creation')
+    
+    tous = Signalement.objects.all()
+    
+    # Stats réelles
+    total = tous.count()
+    nouveaux = tous.filter(statut__in=['nouveau', 'confirme']).count()
+    en_traitement = tous.filter(statut='en_traitement').count()
+    nettoyes = tous.filter(statut='nettoye').count()
+    
+    # Filtrage
+    signalements = tous.order_by('-date_creation')
     statut_filtre = request.GET.get('statut')
     if statut_filtre:
         signalements = signalements.filter(statut=statut_filtre)
+    
     return render(request, 'hysacam/dashboard.html', {
         'signalements': signalements,
         'statut_filtre': statut_filtre,
+        'total': total,
+        'nouveaux': nouveaux,
+        'en_traitement': en_traitement,
+        'nettoyes': nettoyes,
     })
 
 
